@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leadmap – find local business leads</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="layout">
+    <aside class="rail">
+      <div class="brand">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 2a9 9 0 0 0-9 9c0 6.5 9 15 9 15s9-8.500 9-15a9 9 0 0 0-9-9Z" fill="#E8B04B"/><circle cx="14" cy="11" r="3.500" fill="#14343B"/></svg>
+        <span>Leadmap</span>
+      </div>
+      <p class="tagline">Find local businesses and export their public contact details.</p>
+
+      <form id="search-form" novalidate>
+        <label for="keyword">Business type or keyword</label>
+        <input id="keyword" name="keyword" type="text" placeholder="dentist, bakery, car repair" required list="suggestions" autocomplete="off">
+        <datalist id="suggestions">
+          <option>restaurant</option><option>cafe</option><option>dentist</option><option>pharmacy</option>
+          <option>hotel</option><option>gym</option><option>salon</option><option>real estate</option>
+          <option>lawyer</option><option>car repair</option><option>supermarket</option><option>bakery</option>
+        </datalist>
+
+        <label for="location">City or location</label>
+        <input id="location" name="location" type="text" placeholder="Lahore, Pakistan" required>
+
+        <label for="limit">Maximum results</label>
+        <select id="limit" name="limit">
+          <option value="50">50</option>
+          <option value="100" selected>100</option>
+          <option value="250">250</option>
+          <option value="500">500</option>
+        </select>
+
+        <button type="submit" id="search-btn" class="primary">Search businesses</button>
+      </form>
+
+      {% if not has_contact %}
+      <p class="notice">Add <code>OSM_CONTACT</code> to your <code>.env</code> file. OpenStreetMap asks every app to identify itself.</p>
+      {% endif %}
+
+      <p class="credit">
+        Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>,
+        licensed under the ODbL. Keep this credit when you share exported data.
+      </p>
+    </aside>
+
+    <main class="main">
+      <header class="toolbar">
+        <div>
+          <h1 id="result-title">Results</h1>
+          <p id="result-meta" class="meta">Run a search to see businesses here.</p>
+        </div>
+        <div class="actions">
+          <label class="check"><input type="checkbox" id="only-contact"> Only with phone or website</label>
+          <button id="export-csv" class="ghost" disabled>Export CSV</button>
+          <button id="export-xlsx" class="ghost" disabled>Export Excel</button>
+        </div>
+      </header>
+
+      <div id="error" class="error" role="alert" hidden></div>
+      <div id="loading" class="loading" hidden><span class="spinner"></span> Searching OpenStreetMap… this can take up to 30 seconds.</div>
+
+      <div id="empty" class="empty">
+        <h2>No search yet</h2>
+        <p>Pick a business type and a city on the left, then choose <strong>Search businesses</strong>.</p>
+      </div>
+
+      <div id="table-wrap" class="table-wrap" hidden>
+        <table>
+          <thead>
+            <tr>
+              <th>Business</th><th>Address</th><th>Phone</th><th>Website</th><th>OSM ID</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <nav id="pager" class="pager" hidden>
+        <button id="prev" class="ghost">Previous</button>
+        <span id="page-label"></span>
+        <button id="next" class="ghost">Next</button>
+      </nav>
+
+      <p class="footnote">
+        OpenStreetMap is built by volunteers, so some businesses have no phone or website listed, and ratings are not available.
+        Check each lead before contacting it and follow your local marketing and privacy laws.
+      </p>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
